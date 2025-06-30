@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Bookings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .booking-card {
+            background-color: #fefefe;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 700px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .cancel-form {
+            margin-top: 15px;
+        }
+        .cancel-btn {
+            background-color: #c62828;
+            color: white;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .cancel-btn:hover {
+            background-color: #b71c1c;
+        }
+        .password-input {
+            padding: 6px;
+            margin-right: 10px;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+        }
+        .flash-message {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body style="background-color: #e3f2fd;">
+
+    <h1 style="text-align: center; margin-top: 30px;">My Bookings</h1>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-message">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if bookings %}
+        {% for booking in bookings %}
+        <div class="booking-card">
+            <h3>{{ booking.category | capitalize }} - {{ booking.item.name }}</h3>
+            <p><strong>Route:</strong> {{ booking.item.route }}</p>
+            {% if booking.travel_date %}
+                <p><strong>Travel Date:</strong> {{ booking.travel_date }}</p>
+            {% endif %}
+            {% if booking.checkin_date %}
+                <p><strong>Check-in:</strong> {{ booking.checkin_date }}</p>
+                <p><strong>Check-out:</strong> {{ booking.checkout_date }}</p>
+                <p><strong>Guests:</strong> {{ booking.guests }}</p>
+                <p><strong>Room Type:</strong> {{ booking.room_type }}</p>
+            {% endif %}
+            {% if booking.seats and booking.seats|length > 0 %}
+                <p><strong>Seats:</strong> {{ booking.seats | join(", ") }}</p>
+            {% endif %}
+            <p><strong>Total Price:</strong> ₹{{ booking.total_price }}</p>
+            <p><strong>Booked On:</strong> {{ booking.timestamp }}</p>
+
+            <form class="cancel-form" method="POST" action="{{ url_for('cancel_booking', booking_id=booking['_id']) }}" onsubmit="return confirmCancel();">
+                <input type="password" name="password" class="password-input" placeholder="Enter Password" required>
+                <button type="submit" class="cancel-btn">Cancel Booking</button>
+            </form>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align: center;">You have no bookings yet.</p>
+    {% endif %}
+
+    <div style="text-align: center; margin: 30px;">
+        <a href="{{ url_for('home') }}"><button class="cancel-btn" style="background-color: #1976d2;">&larr; Back to Home</button></a>
+    </div>
+
+    <script>
+        function confirmCancel() {
+            return confirm("Are you sure you want to cancel this booking?\nEnter your password and click OK to confirm.");
+        }
+    </script>
+</body>
+</html>

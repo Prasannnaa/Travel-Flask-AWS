@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Travel Booking Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='travel1.jpg') }}" alt="travel logo">
+            </div>
+            <h1>✈️ One Stop. All Routes🌐</h1>
+            <nav>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#Welcome">Destinations</a></li>
+                    {% if session.get('user') %}
+                        <li><strong>👋 {{ session['user'] }}</strong></li>
+                        <li><a href="/logout">Logout</a></li>
+                    {% else %}
+                        <li><a href="/login">Login</a></li>
+                        <li><a href="/signup">Sign up</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('my_bookings') }}" class="btn">🧾 My Bookings</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h2>Explore the World with Travel Go</h2>
+            {% if session.get('user') %}
+                <p>Welcome back, {{ session['user'] }}! 🌍</p>
+            {% else %}
+                <p>🌍 Book Flights, Trains, Buses & Hotels — All in One Place.</p>
+            {% endif %}
+            <a href="#Welcome" class="btn">Discover destinations</a>
+        </div>
+    </section>
+
+   
+    <section class="cont1">
+        <h2>Choose your travel category</h2>
+        <div class="image-row">
+            <a href="/flight"><div class="card"><img src="{{ url_for('static', filename='flight.jpg') }}"></div></a>
+            <a href="/train"><div class="card"><img src="{{ url_for('static', filename='train.jpg') }}"></div></a>
+            <a href="/bus"><div class="card"><img src="{{ url_for('static', filename='bus.jpg') }}"></div></a>
+            <a href="/hotel"><div class="card"><img src="{{ url_for('static', filename='hotel.jpg') }}"></div></a>
+            <a href="/car"><div class="card"><img src="{{ url_for('static', filename='car.jpg') }}"></div></a>
+        </div>
+    </section>
+
+    <section class="cont1" id="Welcome">
+        <h2>Popular destinations</h2>
+        <div class="image-row">
+            <a href="#Welcome"><div class="card"><img src="{{ url_for('static', filename='chennai.jpg') }}"></div></a>
+            <a href="#Welcome"><div class="card"><img src="{{ url_for('static', filename='kol.jpg') }}"></div></a>
+            <a href="#Welcome"><div class="card"><img src="{{ url_for('static', filename='hyd.jpg') }}"></div></a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-container">
+            <p>© 2025 Travel Go. All rights reserved.</p>
+            <p>Designed with ❤️ by Prasanna</p>
+        </div>
+    </footer>
+</body>
+</html>

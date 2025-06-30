@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up - Travel Go</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-bg">
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <h2>Create Your Journey ✨</h2>
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="flash">{{ messages[0] }}</div>
+              {% endif %}
+            {% endwith %}
+            <form method="POST">
+                <input type="text" name="username" placeholder="Username" required>
+                <div class="password-wrapper">
+    <input type="password" name="password" placeholder="Password" id="signupPassword" required>
+    <span class="toggle-password" onclick="togglePassword('signupPassword', this)">👁️</span>
+</div>
+
+                <button type="submit">Sign Up</button>
+            </form>
+            <p>Already registered? <a href="/login">Login</a></p>
+        </div>
+    </div>
+    <script>
+    function togglePassword(id, icon) {
+        const input = document.getElementById(id);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.textContent = "🙈";
+        } else {
+            input.type = "password";
+            icon.textContent = "👁️";
+        }
+    }
+</script>
+
+</body>
+</html>

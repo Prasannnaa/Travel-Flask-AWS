@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Confirmation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .confirmation-card {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .confirmation-card h2 {
+            color: #160863;
+        }
+
+        .confirmation-card p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #160863;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body style="background-color: #e0f7fa;">
+    <div class="confirmation-card">
+        <h2>Booking Confirmed 🎉</h2>
+        <p><strong>Name:</strong> {{ full_name }}</p>
+        <p><strong>Item:</strong> {{ item.name }}</p>
+        <p><strong>Route:</strong> {{ item.route }}</p>
+
+        {% if seats %}
+            <p><strong>Seats:</strong> {{ seats | join(', ') }}</p>
+        {% endif %}
+
+        {% if travel_date %}
+            <p><strong>Travel Date:</strong> {{ travel_date }}</p>
+        {% endif %}
+
+        {% if item.category == 'hotel' or 'hotel' in item.get('category', '') %}
+            <p><strong>Check-in:</strong> {{ booking.checkin if booking else request.form.get('checkin_date') }}</p>
+            <p><strong>Check-out:</strong> {{ booking.checkout if booking else request.form.get('checkout_date') }}</p>
+            <p><strong>Guests:</strong> {{ booking.guests if booking else request.form.get('guests') }}</p>
+            <p><strong>Room Type:</strong> {{ booking.room_type if booking else request.form.get('room_type') }}</p>
+        {% endif %}
+
+        <p><strong>Total Price:</strong> ₹{{ total_price }}</p>
+
+        <a href="{{ url_for('home') }}"><button class="back-btn">Back to Home</button></a>
+    </div>
+</body>
+</html>

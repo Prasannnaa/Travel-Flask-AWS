@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ category | capitalize }} Options</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .item-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+        }
+        .book-now-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 16px;
+            background-color: #160863;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .book-now-btn:hover {
+            background-color: #2980b9;
+        }
+        .seat-row {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .seat-box {
+            width: 35px;
+            height: 35px;
+            display: inline-block;
+            border-radius: 6px;
+            background-color: #d0f0d0;
+            text-align: center;
+            line-height: 35px;
+            margin: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            border: 1px solid #999;
+        }
+        .seat-box input {
+            display: none;
+        }
+        .seat-box.booked {
+            background-color: #ccc;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .seat-box.selected {
+            background-color: #2980b9;
+            color: #fff;
+        }
+        .seat-box.available:hover {
+            transform: scale(1.1);
+            background-color: #27ae60;
+            color: #fff;
+        }
+    </style>
+</head>
+<body style="background-color: #e0f7fa;">
+    <h1 style="text-align: center; margin-top: 30px;">{{ category | capitalize }} Options</h1>
+
+    {% for item in items %}
+    <div class="item-card" style="text-align: center;">
+        <h2><strong>{{ item.name }}</strong></h2>
+        <p>Route: {{ item.route }}</p>
+        <p><strong>Price: ₹{{ item.price }}</strong></p>
+
+        {% if show_index == loop.index0 %}
+        <form method="POST" action="{{ url_for('book', category=category, index=loop.index0) }}">
+            <input type="text" name="full_name" placeholder="Your Full Name" required><br><br>
+
+            {% if category.lower() == 'hotel' %}
+                <label>Check-in Date:</label><br>
+                <input type="date" name="checkin_date" required><br><br>
+                <label>Check-out Date:</label><br>
+                <input type="date" name="checkout_date" required><br><br>
+                <label>Guests:</label><br>
+                <input type="number" name="guests" min="1" max="4" required><br><br>
+                <label>Room Type:</label><br>
+                <select name="room_type" required>
+                    <option value="Single">Single</option>
+                    <option value="Double">Double</option>
+                    <option value="Deluxe">Deluxe</option>
+                    <option value="Suite">Suite</option>
+                </select><br><br>
+
+            {% elif category.lower() == 'car' %}
+                <input type="date" name="travel_date" required><br><br>
+                <p>You are booking a private car. 🚗</p>
+
+            {% else %}
+                <input type="date" name="travel_date"
+                       onchange="fetchAndDisableSeats(this, '{{ item.name }}', '{{ category }}')"
+                       required>
+                <br><br>
+                <label>Select up to 4 seats:</label><br><br>
+
+                {% if category.lower() == 'train' %}
+                    {% for i in range(1, 4) %}
+                    <div class="seat-row">
+                        {% for berth in ['LB', 'MB', 'UB'] %}
+                            {% set seat = berth ~ i %}
+                            <label class="seat-box {% if item.name in booked_seats and selected_date in booked_seats[item.name] and seat in booked_seats[item.name][selected_date] %}booked{% else %}available{% endif %}">
+                                <input type="checkbox" name="seat" value="{{ seat }}"
+                                    {% if item.name in booked_seats and selected_date in booked_seats[item.name] and seat in booked_seats[item.name][selected_date] %} disabled {% endif %}
+                                    onchange="handleSeatSelect(this)">
+                                {{ seat }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                    {% for i in range(1, 3) %}
+                    <div class="seat-row">
+                        {% for berth in ['SL', 'SU'] %}
+                            {% set seat = berth ~ i %}
+                            <label class="seat-box {% if item.name in booked_seats and selected_date in booked_seats[item.name] and seat in booked_seats[item.name][selected_date] %}booked{% else %}available{% endif %}">
+                                <input type="checkbox" name="seat" value="{{ seat }}"
+                                    {% if item.name in booked_seats and selected_date in booked_seats[item.name] and seat in booked_seats[item.name][selected_date] %} disabled {% endif %}
+                                    onchange="handleSeatSelect(this)">
+                                {{ seat }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                {% elif category.lower() == 'bus' %}
+                    {% for row in ['A','B','C','D','E','F'] %}
+                    <div class="seat-row">
+                        {% for col in [1, 2, 3, 4] %}
+                            {% set seat = row ~ col %}
+                            <label class="seat-box {% if item.name in booked_seats and selected_date in booked_seats[item.name] and seat in booked_seats[item.name][selected_date] %}booked{% else %}available{% endif %}">
+                                <input type="checkbox" name="seat" value="{{ seat }}"
+                                    {% if item.name in booked_seats and selected_date in booked_seats[item.name] and seat in booked_seats[item.name][selected_date] %} disabled {% endif %}
+                                    onchange="handleSeatSelect(this)">
+                                {{ seat }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                {% else %}
+                    {% for row in ['A','B','C','D','E','F'] %}
+                    <div class="seat-row">
+                        {% for col in range(1, 7) %}
+                            {% set seat = row ~ col %}
+                            <label class="seat-box {% if item.name in booked_seats and selected_date in booked_seats[item.name] and seat in booked_seats[item.name][selected_date] %}booked{% else %}available{% endif %}">
+                                <input type="checkbox" name="seat" value="{{ seat }}"
+                                    {% if item.name in booked_seats and selected_date in booked_seats[item.name] and seat in booked_seats[item.name][selected_date] %} disabled {% endif %}
+                                    onchange="handleSeatSelect(this)">
+                                {{ seat }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+
+            <br>
+            <button class="book-now-btn" type="submit">Confirm Booking</button>
+        </form>
+        {% else %}
+        <a href="{{ url_for('show_category', category=category, show=loop.index0, date=selected_date or '') }}">
+            <button class="book-now-btn">Book Now</button>
+        </a>
+        {% endif %}
+    </div>
+    {% else %}
+        <p style="text-align: center;">No {{ category | capitalize }} options available.</p>
+    {% endfor %}
+
+    <div style="text-align: center; margin: 30px;">
+        <a href="{{ url_for('home') }}"><button class="book-now-btn">&larr; Back to Home</button></a>
+    </div>
+
+    <script>
+    function handleSeatSelect(checkbox) {
+        const box = checkbox.parentElement;
+        const form = box.closest('form');
+        const selected = form.querySelectorAll('input[type="checkbox"][name="seat"]:checked');
+
+        if (selected.length > 4) {
+            checkbox.checked = false;
+            alert("You can select up to 4 seats only.");
+            return;
+        }
+
+        if (checkbox.checked) {
+            box.classList.add('selected');
+        } else {
+            box.classList.remove('selected');
+        }
+    }
+
+    function fetchAndDisableSeats(dateInput, itemName, category) {
+        const selectedDate = dateInput.value;
+        const form = dateInput.closest('form');
+        if (!selectedDate || !form) return;
+
+        fetch(`/api/booked_seats?item_name=${encodeURIComponent(itemName)}&category=${category}&travel_date=${selectedDate}`)
+            .then(response => response.json())
+            .then(data => {
+                const booked = data.booked_seats || [];
+                const checkboxes = form.querySelectorAll('input[type="checkbox"][name="seat"]');
+                checkboxes.forEach(cb => {
+                    const label = cb.parentElement;
+                    if (booked.includes(cb.value)) {
+                        cb.disabled = true;
+                        label.classList.add('booked');
+                        label.classList.remove('available', 'selected');
+                    } else {
+                        cb.disabled = false;
+                        label.classList.remove('booked');
+                        label.classList.add('available');
+                    }
+                });
+            })
+            .catch(err => console.error("Seat fetch error:", err));
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+    <h2>{{ category.title() }} - Search Results</h2>
+
+    {% if results %}
+        <ul>
+        {% for item in results %}
+            <li>
+                {% if category == 'hotels' %}
+                    {{ item.name }} in {{ item.city }} – ₹{{ item.price }}
+                {% else %}
+                    From {{ item.from }} to {{ item.to }} – ₹{{ item.price }}
+                {% endif %}
+                |
+                <a href="/book/{{ category }}/{{ item.id }}">Book</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found.</p>
+    {% endif %}
+
+    <a href="/">Back to Home</a>
+</body>
+</html>

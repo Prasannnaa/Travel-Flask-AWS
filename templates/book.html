@@ -1,0 +1,22 @@
+#book.html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Now</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="auth-bg">
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h2>Booking: {{ item.name }}</h2>
+        <form method="POST">
+            <input type="text" name="name" placeholder="Your Full Name" required>
+            <input type="date" name="date" required>
+            <input type="number" name="passengers" placeholder="No. of Passengers" min="1" required>
+            <button type="submit">Confirm Booking</button>
+        </form>
+        <p><a href="/">← Back to Home</a></p>
+    </div>
+</div>
+</body>
+</html>
