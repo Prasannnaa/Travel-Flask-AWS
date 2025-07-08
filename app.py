@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.secret_key = 'secret'
 
 # MongoDB connection
-client = MongoClient('mongodb+srv://prasannalakshmivadapalli:LnWBmpCG0IbngJQy@cluster0.x2nw2wy.mongodb.net/')
+client = MongoClient('mongodb+srv://prasannalakshmivadapalli:889emkkEvQnkGkIW@cluster0.x2nw2wy.mongodb.net/')
 db = client['travel_booking']
 users_collection = db['users']
 bookings_collection = db['bookings']
@@ -244,4 +244,5 @@ def get_booked_seats():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
