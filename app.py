@@ -4,12 +4,18 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import boto3
 import uuid
+import os
+from dotenv import load_dotenv
+
 
 app = Flask(__name__)
 app.secret_key = 'secret'
 
 # MongoDB connection
-client = MongoClient('mongodb+srv://prasannalakshmivadapalli:889emkkEvQnkGkIW@cluster0.x2nw2wy.mongodb.net/')
+load_dotenv()
+client = pymongo.MongoClient(os.getenv("MONGO_URI"))
+
+
 db = client['travel_booking']
 users_collection = db['users']
 bookings_collection = db['bookings']
@@ -244,5 +250,4 @@ def get_booked_seats():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
-
+    app.run(debug=True)
